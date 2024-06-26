@@ -13,20 +13,25 @@ package org.eclipse.cdt.cmake.core.internal;
 import org.eclipse.cdt.cmake.core.ICMakeToolChainManager;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 public class Activator extends Plugin {
 
 	private static Activator plugin;
+	public static boolean fileChange;
 
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		super.start(bundleContext);
 		Activator.plugin = this;
 		bundleContext.registerService(ICMakeToolChainManager.class, new CMakeToolChainManager(), null);
+		new CMakeChangeDetector();
+		Activator.fileChange = true;
 	}
 
 	@Override
@@ -63,6 +68,10 @@ public class Activator extends Plugin {
 		BundleContext context = plugin.getBundle().getBundleContext();
 		ServiceReference<T> ref = context.getServiceReference(service);
 		return ref != null ? context.getService(ref) : null;
+	}
+
+	public static IPreferencesService getPreferencesService() {
+		return Platform.getPreferencesService();
 	}
 
 }
