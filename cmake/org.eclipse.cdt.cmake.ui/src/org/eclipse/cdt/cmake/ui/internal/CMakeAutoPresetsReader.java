@@ -14,6 +14,9 @@ public class CMakeAutoPresetsReader {
 
 	private String content;
 
+	public ArrayList<String> presetsConfig = new ArrayList<>();
+	public ArrayList<String> presetsBuild = new ArrayList<>();
+
 	public CMakeAutoPresetsReader(IFile file) {
 		this.file = file;
 	}
@@ -30,8 +33,10 @@ public class CMakeAutoPresetsReader {
 
 	}
 
-	public ArrayList<String> processCMakePresets() {
-		ArrayList<String> presets = new ArrayList<>();
+	public void processCMakePresets() {
+		ArrayList<ArrayList<String>> presets = new ArrayList<>();
+		presets.add(presetsConfig);
+		presets.add(presetsBuild);
 		try {
 
 			int versionIndex = content.indexOf("\"version\"");
@@ -40,15 +45,16 @@ public class CMakeAutoPresetsReader {
 
 			String configurePresets = extractArray(content, configurePresetsIndex);
 			String buildPresets = extractArray(content, buildPresetsIndex);
-
-			for (String array : new String[] { configurePresets, buildPresets }) {
-				String[] lines = array.split("}");
+			String[] temp = new String[] { configurePresets, buildPresets };
+			for (int i = 0; i < temp.length; i++) {
+				String[] lines = temp[i].split("}");
 
 				for (String line : lines) {
 					if (line.contains("\"name\":")) {
 
 						String name = line.trim().split(":")[1].trim().replaceAll("\"", "").split(",")[0];
-						presets.add(name);
+						presets.get(i).add(name);
+
 					}
 				}
 			}
@@ -56,13 +62,29 @@ public class CMakeAutoPresetsReader {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return presets;
 	}
 
 	private String extractArray(String json, int index) {
 		int start = json.indexOf('[', index);
-		int end = json.indexOf(']', start) + 1;
-		return json.substring(start, end);
+		int end = findEndOfArray(json, start);
+		return json.substring(start, end + 1);
+	}
+
+	private int findEndOfArray(String json, int startIndex) {
+		int count = 1;
+		int index = startIndex + 1;
+
+		while (index < json.length() && count > 0) {
+			char currentChar = json.charAt(index);
+			if (currentChar == '[') {
+				count++;
+			} else if (currentChar == ']') {
+				count--;
+			}
+			index++;
+		}
+
+		return index - 1;
 	}
 
 }

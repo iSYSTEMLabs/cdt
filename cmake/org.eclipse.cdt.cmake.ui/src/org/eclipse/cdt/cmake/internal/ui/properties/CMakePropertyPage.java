@@ -77,7 +77,8 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 	private Combo presetsComboBld;
 	private Text cmakeCommandText;
 	private Text ninjaCommandText;
-	private ArrayList<String> presets;
+	private ArrayList<String> presetsConfig;
+	private ArrayList<String> presetsBuild;
 	private List<ICMakePropertyPageControl> componentList = new ArrayList<>();
 
 	@Override
@@ -112,7 +113,10 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 			try {
 				CMakeAutoPresetsReader ar = new CMakeAutoPresetsReader(file);
 				ar.readContents();
-				presets = ar.processCMakePresets();
+				ar.processCMakePresets();
+				presetsConfig = ar.presetsConfig;
+				presetsBuild = ar.presetsBuild;
+
 			} catch (IOException | CoreException e) {
 
 				e.printStackTrace();
@@ -184,7 +188,7 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 		presetsComboCfg = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
 		presetsComboCfg.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		for (String preset : this.presets) {
+		for (String preset : this.presetsConfig) {
 			presetsComboCfg.add(preset);
 		}
 
@@ -194,7 +198,7 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 		presetsComboBld = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
 		presetsComboBld.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		for (String preset : this.presets) {
+		for (String preset : this.presetsBuild) {
 			presetsComboBld.add(preset);
 		}
 
