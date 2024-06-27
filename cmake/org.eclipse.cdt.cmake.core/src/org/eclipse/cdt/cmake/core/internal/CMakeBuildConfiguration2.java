@@ -36,6 +36,8 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -209,7 +211,7 @@ public class CMakeBuildConfiguration2 implements ICBuildConfiguration, IMarkerGe
 				epm.setOutputStream(console.getOutputStream());
 
 				org.eclipse.core.runtime.Path workingDirNinja = new org.eclipse.core.runtime.Path(
-						getBuildDirectory(configPreset).toString());
+						getBuildDirectory().toString());
 
 				List<String> cmake_build = new ArrayList<>();
 				cmake_build.add("--build"); //$NON-NLS-1$
@@ -268,14 +270,56 @@ public class CMakeBuildConfiguration2 implements ICBuildConfiguration, IMarkerGe
 	}
 
 	private URI getBuildDirectoryURI() {
-		return getBuildDirectory(configPreset).toUri();
+		return getBuildDirectory().getLocationURI();
 	}
 
-	private Path getBuildDirectory(String name) {
-		IProject project = getProject();
-		IFolder file1 = project.getFolder("build"); //$NON-NLS-1$
-		IFolder file2 = file1.getFolder(name);
-		return Paths.get(file2.getLocationURI());
+	private IFolder getBuildDirectory() {
+		IFolder file = null;
+		try {
+			if (withPreset) {
+				IProject project = getProject();
+				file = project.getFolder("build"); //$NON-NLS-1$
+			} else {
+
+				IPath path = IPath
+						.fromPath(Paths.get(getProjectDirectory().toUri()).resolve(getBuildPathFromCommand()));
+
+				IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+				file = workspaceRoot.getFolder(path);
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return file;
+
+	}
+
+	private String getBuildPathFromCommand() {
+		String flag = "-B";
+		int flagIndex = cmakeCommand.indexOf(flag);
+
+		if (flagIndex == -1) {
+			return null; // -B flag not found
+		}
+
+		int startIndex = flagIndex + flag.length();
+		// Skip any spaces after the -B flag
+		while (startIndex < cmakeCommand.length() && cmakeCommand.charAt(startIndex) == ' ') {
+			startIndex++;
+		}
+
+		if (startIndex >= cmakeCommand.length()) {
+			return null; // No build directory specified after -B
+		}
+
+		int endIndex = cmakeCommand.indexOf(' ', startIndex);
+		if (endIndex == -1) {
+			endIndex = cmakeCommand.length(); // No more spaces, take the rest of the string
+		}
+
+		return cmakeCommand.substring(startIndex, endIndex);
 
 	}
 
@@ -321,6 +365,10 @@ public class CMakeBuildConfiguration2 implements ICBuildConfiguration, IMarkerGe
 
 	@Override
 	public void clean(IConsole console, IProgressMonitor monitor) throws CoreException {
+
+		IFolder build = this.getBuildDirectory();
+		build.delete(true, monitor);
+		Activator.fileChange = true;
 
 	}
 
