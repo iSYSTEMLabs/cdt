@@ -57,8 +57,8 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 	public String cmake;
 	public String ninja;
 	public boolean withPreset;
-	public String cmakeCommand;
-	public String ninjaCommand;
+	public String configCommand;
+	public String buildCommand;
 	private IToolChain tc;
 	public boolean fileChange;
 	private String buildPreset;
@@ -166,7 +166,7 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 					if (withPreset) {
 						p = startBuildProcess(cmake, commands, env, workingDir, console, monitor);
 					} else {
-						String[] parts = cmakeCommand.trim().split("\\s+"); //$NON-NLS-1$
+						String[] parts = configCommand.trim().split("\\s+"); //$NON-NLS-1$
 						String[] flags = new String[parts.length - 1];
 						System.arraycopy(parts, 1, flags, 0, parts.length - 1);
 						List<String> flagsArray = Arrays.asList(flags);
@@ -208,7 +208,7 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 					workingDir = new org.eclipse.core.runtime.Path(getProjectDirectory().toString());
 					p2 = startBuildProcess(cmake, cmake_build, env, workingDir, console, monitor);
 				} else {
-					String[] parts = ninjaCommand.trim().split("\\s+"); //$NON-NLS-1$
+					String[] parts = buildCommand.trim().split("\\s+"); //$NON-NLS-1$
 					String[] flags = new String[parts.length - 1];
 					System.arraycopy(parts, 1, flags, 0, parts.length - 1);
 					List<String> ninja_build = Arrays.asList(flags);
@@ -242,7 +242,7 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 
 		IPreferencesService preferencesService = Activator.getPreferencesService();
 
-		if (cmakeCommand == null) {
+		if (configCommand == null) {
 
 			this.withPreset = Boolean.parseBoolean(
 					preferencesService.getString("org.eclipse.cdt.cmake.ui", "withPresets", "true", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -250,8 +250,8 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 					preferencesService.getString("org.eclipse.cdt.cmake.ui", "selectedPresetBld", "", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			this.ninja = preferencesService.getString("org.eclipse.cdt.cmake.ui", "ninjaPath", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
 			this.cmake = preferencesService.getString("org.eclipse.cdt.cmake.ui", "cmakePath", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-			this.cmakeCommand = preferencesService.getString("org.eclipse.cdt.cmake.ui", "cmakeCommand", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-			this.ninjaCommand = preferencesService.getString("org.eclipse.cdt.cmake.ui", "ninjaCommand", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
+			this.configCommand = preferencesService.getString("org.eclipse.cdt.cmake.ui", "configCommand", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
+			this.buildCommand = preferencesService.getString("org.eclipse.cdt.cmake.ui", "buildCommand", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
 
 		}
 
@@ -304,7 +304,7 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 
 	private String[] getBuildPathFromCommand() {
 		String flag = "-B"; //$NON-NLS-1$
-		int flagIndex = cmakeCommand.indexOf(flag);
+		int flagIndex = configCommand.indexOf(flag);
 
 		if (flagIndex == -1) {
 
@@ -313,20 +313,20 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 
 		int startIndex = flagIndex + flag.length();
 		// Skip any spaces after the -B flag
-		while (startIndex < cmakeCommand.length() && cmakeCommand.charAt(startIndex) == ' ') {
+		while (startIndex < configCommand.length() && configCommand.charAt(startIndex) == ' ') {
 			startIndex++;
 		}
 
-		if (startIndex >= cmakeCommand.length()) {
+		if (startIndex >= configCommand.length()) {
 			return new String[] { "build" }; // No build directory specified after -B //$NON-NLS-1$
 		}
 
-		int endIndex = cmakeCommand.indexOf(' ', startIndex);
+		int endIndex = configCommand.indexOf(' ', startIndex);
 		if (endIndex == -1) {
-			endIndex = cmakeCommand.length(); // No more spaces, take the rest of the string
+			endIndex = configCommand.length(); // No more spaces, take the rest of the string
 		}
 
-		return cmakeCommand.split("/"); //$NON-NLS-1$
+		return configCommand.split("/"); //$NON-NLS-1$
 	}
 
 	private Path getProjectDirectory() {

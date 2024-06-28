@@ -52,7 +52,8 @@ public class CMakeBuildConfigurationProvider implements ICBuildConfigurationProv
 				preferencesService.getString("org.eclipse.cdt.cmake.ui", "selectedPresetBld", "", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		cmakeConfig.ninja = preferencesService.getString("org.eclipse.cdt.cmake.ui", "ninjaPath", "", null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		cmakeConfig.cmake = preferencesService.getString("org.eclipse.cdt.cmake.ui", "cmakePath", "", null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		cmakeConfig.cmakeCommand = preferencesService.getString("org.eclipse.cdt.cmake.ui", "cmakeCommand", "", null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		cmakeConfig.configCommand = preferencesService.getString("org.eclipse.cdt.cmake.ui", "configCommand", "", null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		cmakeConfig.buildCommand = preferencesService.getString("org.eclipse.cdt.cmake.ui", "buildCommand", "", null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 		configManager.addBuildConfiguration(config, cmakeConfig);
 		return cmakeConfig;
