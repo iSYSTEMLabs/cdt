@@ -291,6 +291,9 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 		String configCommand = configCommandText.getText();
 		String buildCommand = buildCommandText.getText();
 
+		cmakePath = (cmakePath == "") ? "cmake" : cmakePath; //$NON-NLS-1$ //$NON-NLS-2$
+		ninjaPath = (ninjaPath == "") ? "ninja" : ninjaPath; //$NON-NLS-1$ //$NON-NLS-2$
+
 		// Save project-specific preferences
 		IProject project = getElement().getAdapter(IProject.class);
 		if (project != null) {
@@ -315,6 +318,7 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 		}
 
 		//test paths
+
 		if (testPath(cmakePath, "cmake") && testPath(ninjaPath, "ninja")) { //$NON-NLS-1$ //$NON-NLS-2$
 			MessageDialog.openInformation(getShell(), "Preferences Saved", "Preferences saved successfully!"); //$NON-NLS-1$ //$NON-NLS-2$
 		}

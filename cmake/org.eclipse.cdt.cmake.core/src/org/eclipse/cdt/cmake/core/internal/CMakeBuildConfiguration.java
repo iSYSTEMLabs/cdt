@@ -171,7 +171,8 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 						System.arraycopy(parts, 1, flags, 0, parts.length - 1);
 						List<String> flagsArray = Arrays.asList(flags);
 						if (parts[0].matches("cmake") == false) { //$NON-NLS-1$
-							console.getErrorStream().write(String.format(Messages.CMakeBuildConfiguration_Failure, "")); //$NON-NLS-1$
+							console.getErrorStream().write(String.format(Messages.CMakeBuildConfiguration_Failure,
+									"config command is not cmake")); //$NON-NLS-1$
 							Activator.fileChange = true;
 							return null;
 						}
@@ -179,7 +180,8 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 					}
 
 					if (p == null) {
-						console.getErrorStream().write(String.format(Messages.CMakeBuildConfiguration_Failure, "")); //$NON-NLS-1$
+						console.getErrorStream()
+								.write(String.format(Messages.CMakeBuildConfiguration_Failure, "process in null")); //$NON-NLS-1$
 						Activator.fileChange = true;
 						return null;
 					}
@@ -212,12 +214,23 @@ public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGen
 					String[] flags = new String[parts.length - 1];
 					System.arraycopy(parts, 1, flags, 0, parts.length - 1);
 					List<String> ninja_build = Arrays.asList(flags);
+					if (parts[0].contentEquals("cmake")) { //$NON-NLS-1$
+						p2 = startBuildProcess(cmake, ninja_build, env, workingDir, console, monitor);
+					} else if (parts[0].contentEquals("ninja")) { //$NON-NLS-1$
+						p2 = startBuildProcess(ninja, ninja_build, env, workingDir, console, monitor);
+					} else {
+						console.getErrorStream().write(String.format(Messages.CMakeBuildConfiguration_Failure,
+								"build command does not start correctly")); //$NON-NLS-1$
+						return null;
+					}
+
 					p2 = startBuildProcess(parts[0], ninja_build, env, workingDir, console, monitor);
 				}
 
 				if (p2 == null) {
 					Activator.fileChange = true;
-					console.getErrorStream().write(String.format(Messages.CMakeBuildConfiguration_Failure, "")); //$NON-NLS-1$
+					console.getErrorStream()
+							.write(String.format(Messages.CMakeBuildConfiguration_Failure, "process is null")); //$NON-NLS-1$
 					return null;
 				}
 				watchProcess(new IConsoleParser[] { epm }, monitor);
