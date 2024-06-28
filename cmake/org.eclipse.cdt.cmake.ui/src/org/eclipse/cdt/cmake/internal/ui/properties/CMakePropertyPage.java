@@ -52,6 +52,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -147,20 +148,54 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 	private void createCMakeSettingsGroup(Composite parent) {
 		Group group = new Group(parent, SWT.NONE);
 		group.setText("CMake Settings"); //$NON-NLS-1$
-		group.setLayout(new GridLayout(2, false));
+		group.setLayout(new GridLayout(3, false));
 		group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		Label cmakePathLabel = new Label(group, SWT.NONE);
-		cmakePathLabel.setText("CMake Path:"); //$NON-NLS-1$
+		cmakePathLabel.setText("CMake Path:");//$NON-NLS-1$
 
 		cmakePathText = new Text(group, SWT.BORDER);
 		cmakePathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		Button browseButton1 = new Button(group, SWT.PUSH);
+		browseButton1.setText("Browse..."); //$NON-NLS-1$
+		// Add listener to the button to open file dialog
+		browseButton1.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
+				dialog.setText("Select CMake Executable"); //$NON-NLS-1$
+				String[] filterExt = { "*.exe", "*.*" }; //$NON-NLS-1$ //$NON-NLS-2$
+				dialog.setFilterExtensions(filterExt);
+				String selectedFile = dialog.open();
+				if (selectedFile != null) {
+					cmakePathText.setText(selectedFile);
+				}
+			}
+		});
 
 		Label ninjaPathLabel = new Label(group, SWT.NONE);
 		ninjaPathLabel.setText("Ninja Path:"); //$NON-NLS-1$
 
 		ninjaPathText = new Text(group, SWT.BORDER);
 		ninjaPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		Button browseButton2 = new Button(group, SWT.PUSH);
+		browseButton2.setText("Browse..."); //$NON-NLS-1$
+		// Add listener to the button to open file dialog
+		browseButton2.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
+				dialog.setText("Select CMake Executable"); //$NON-NLS-1$
+				String[] filterExt = { "*.exe", "*.*" }; //$NON-NLS-1$ //$NON-NLS-2$
+				dialog.setFilterExtensions(filterExt);
+				String selectedFile = dialog.open();
+				if (selectedFile != null) {
+					ninjaPathText.setText(selectedFile);
+				}
+			}
+		});
 	}
 
 	private void createPresetsGroup(Composite parent) {
@@ -319,9 +354,8 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 
 		//test paths
 
-		if (testPath(cmakePath, "cmake") && testPath(ninjaPath, "ninja")) { //$NON-NLS-1$ //$NON-NLS-2$
-			MessageDialog.openInformation(getShell(), "Preferences Saved", "Preferences saved successfully!"); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+		testPath(cmakePath, "cmake"); //$NON-NLS-1$
+		testPath(ninjaPath, "ninja"); //$NON-NLS-1$
 
 	}
 
