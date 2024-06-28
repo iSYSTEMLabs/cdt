@@ -26,27 +26,25 @@ public class CMakeChangeDetector implements IResourceChangeListener {
 	public void resourceChanged(IResourceChangeEvent event) {
 		IResourceDelta delta = event.getDelta();
 		if (delta != null) {
-			// Traverse the delta and check for changes in CMakeLists.txt and CMakePresets.json
+
 			try {
 				delta.accept(deltaVisitor);
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 		}
 	}
 
-	// Implement a visitor to traverse the resource delta
 	IResourceDeltaVisitor deltaVisitor = new IResourceDeltaVisitor() {
 		@Override
 		public boolean visit(IResourceDelta delta) {
 			if (delta.getResource().getType() == IResource.FILE) {
 				String fileName = delta.getResource().getName();
-				if ("CMakeLists.txt".equals(fileName) || "CMakePresets.json".equals(fileName)) {
-					// Check if the file has been changed
+				if ("CMakeLists.txt".equals(fileName) || "CMakePresets.json".equals(fileName)) { //$NON-NLS-1$//$NON-NLS-2$
+
 					if ((delta.getKind() & IResourceDelta.CHANGED) != 0) {
-						// File has been changed, you can trigger your CMake build here
-						System.out.println("File changed: " + delta.getResource().getFullPath());
+
 						IProject project = delta.getResource().getProject();
 
 						Activator.fileChange = true;
@@ -55,43 +53,41 @@ public class CMakeChangeDetector implements IResourceChangeListener {
 					}
 				}
 			}
-			return true; // Continue visiting
+			return true;
 		}
 	};
 
 	public void dispose() {
-		// Unregister the listener when it's no longer needed
+
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 	}
 
 	public void deleteCMakeCacheFiles(IContainer container) {
-		Job deleteJob = new Job("Delete CMakeCache Files") {
+		Job deleteJob = new Job("Delete CMakeCache Files") { //$NON-NLS-1$
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					// Get all members (files and folders) in the container
+
 					for (org.eclipse.core.resources.IResource resource : container.members()) {
-						// Check if the resource is a file and its name is "CMakeCache.txt"
-						if (resource instanceof IFile && resource.getName().equals("CMakeCache.txt")) {
+
+						if (resource instanceof IFile && resource.getName().equals("CMakeCache.txt")) { //$NON-NLS-1$
 							IFile file = (IFile) resource;
-							// Delete the file
+
 							file.delete(true, monitor);
-							System.out.println("Deleted: " + file.getFullPath());
 						} else if (resource instanceof IContainer) {
-							// If the resource is a container (folder), recursively call the method
+
 							deleteCMakeCacheFiles((IContainer) resource);
 						}
 					}
 				} catch (CoreException e) {
 					e.printStackTrace();
-					return new Status(IStatus.ERROR, "YourPluginID", "Error deleting files", e);
+					return new Status(IStatus.ERROR, "YourPluginID", "Error deleting files", e); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				return Status.OK_STATUS;
 			}
 
 		};
 
-		// Schedule the job to run
 		deleteJob.schedule();
 	}
 }

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.cdt.cmake.core.internal.CMakeBuildConfiguration2;
+import org.eclipse.cdt.cmake.core.internal.CMakeBuildConfiguration;
 import org.eclipse.cdt.cmake.core.internal.CMakeToolChainProvider;
 import org.eclipse.cdt.cmake.core.internal.EmptyToolChain;
 import org.eclipse.cdt.cmake.ui.internal.Activator;
@@ -79,19 +79,17 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 	private Text ninjaCommandText;
 	private ArrayList<String> presetsConfig;
 	private ArrayList<String> presetsBuild;
-	private List<ICMakePropertyPageControl> componentList = new ArrayList<>();
 
 	@Override
 	protected Control createContents(Composite parent) {
 
-		//find presets
 		IProject project = getElement().getAdapter(IProject.class);
 		if (project != null) {
 			try {
-				String jsonContent = readCMakePresetsFile(project);
+				readCMakePresetsFile(project);
 
 			} catch (CoreException e) {
-				e.printStackTrace(); // Handle the exception appropriately
+				e.printStackTrace();
 			}
 		}
 
@@ -131,7 +129,6 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 		IProject project = getElement().getAdapter(IProject.class);
 		if (project != null) {
 
-			// Use a preference store to save and load preferences
 			IPreferenceStore preferenceStore = Activator.getPlugin().getPreferenceStore();
 
 			cmakePathText.setText(preferenceStore.getString("cmakePath")); //$NON-NLS-1$
@@ -228,13 +225,11 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 
 	@Override
 	protected void performApply() {
-		savePreferences();
 		super.performApply();
 	}
 
 	@Override
 	protected void performDefaults() {
-		// Set default values
 		super.performDefaults();
 	}
 
@@ -245,9 +240,6 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 		ICBuildConfigurationManager configManager = Activator.getService(ICBuildConfigurationManager.class);
 
 		IBuildConfiguration config = null;
-		// reuse any IBuildConfiguration with the same name for the project
-		// so adding the CBuildConfiguration will override the old one stored
-		// by the CBuildConfigurationManager
 
 		try {
 			if (!project.hasBuildConfig("org.eclipse.cdt.cmake.core.provider/cmake.")) { //$NON-NLS-1$
@@ -256,7 +248,7 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 						new NullProgressMonitor());
 				CMakeToolChainProvider provider = new CMakeToolChainProvider();
 				EmptyToolChain tc = new EmptyToolChain(provider);
-				CMakeBuildConfiguration2 cmakeConfig = new CMakeBuildConfiguration2(config, tc);
+				CMakeBuildConfiguration cmakeConfig = new CMakeBuildConfiguration(config, tc);
 
 				configManager.addBuildConfiguration(config, cmakeConfig);
 
@@ -265,14 +257,14 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 			IBuildConfiguration Config = project.getBuildConfig("org.eclipse.cdt.cmake.core.provider/cmake."); //$NON-NLS-1$
 			ICBuildConfiguration cmakeConfig = configManager.getBuildConfiguration(Config);
 			IPreferenceStore preferenceStore = Activator.getPlugin().getPreferenceStore();
-			((CMakeBuildConfiguration2) cmakeConfig).withPreset = preferenceStore.getBoolean("withPresets"); //$NON-NLS-1$
-			((CMakeBuildConfiguration2) cmakeConfig).setPreset(preferenceStore.getString("selectedPreset"), //$NON-NLS-1$
+			((CMakeBuildConfiguration) cmakeConfig).withPreset = preferenceStore.getBoolean("withPresets"); //$NON-NLS-1$
+			((CMakeBuildConfiguration) cmakeConfig).setPreset(preferenceStore.getString("selectedPreset"), //$NON-NLS-1$
 					preferenceStore.getString("selectedPresetBld")); //$NON-NLS-1$
 
-			((CMakeBuildConfiguration2) cmakeConfig).ninja = preferenceStore.getString("ninjaPath"); //$NON-NLS-1$
-			((CMakeBuildConfiguration2) cmakeConfig).cmake = preferenceStore.getString("cmakePath"); //$NON-NLS-1$
-			((CMakeBuildConfiguration2) cmakeConfig).cmakeCommand = preferenceStore.getString("cmakeCommand"); //$NON-NLS-1$
-			((CMakeBuildConfiguration2) cmakeConfig).ninjaCommand = preferenceStore.getString("ninjaCommand"); //$NON-NLS-1$
+			((CMakeBuildConfiguration) cmakeConfig).ninja = preferenceStore.getString("ninjaPath"); //$NON-NLS-1$
+			((CMakeBuildConfiguration) cmakeConfig).cmake = preferenceStore.getString("cmakePath"); //$NON-NLS-1$
+			((CMakeBuildConfiguration) cmakeConfig).cmakeCommand = preferenceStore.getString("cmakeCommand"); //$NON-NLS-1$
+			((CMakeBuildConfiguration) cmakeConfig).ninjaCommand = preferenceStore.getString("ninjaCommand"); //$NON-NLS-1$
 
 			IProjectDescription projectDescription = project.getDescription();
 			projectDescription.setActiveBuildConfig("org.eclipse.cdt.cmake.core.provider/cmake."); //$NON-NLS-1$
@@ -281,7 +273,7 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 			project.refreshLocal(IProject.DEPTH_INFINITE, new NullProgressMonitor());
 
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 

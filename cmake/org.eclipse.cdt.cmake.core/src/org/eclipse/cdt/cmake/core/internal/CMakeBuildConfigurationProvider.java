@@ -44,7 +44,7 @@ public class CMakeBuildConfigurationProvider implements ICBuildConfigurationProv
 
 		toolChainManager.addToolChain(tc);
 
-		CMakeBuildConfiguration2 cmakeConfig = new CMakeBuildConfiguration2(config, tc);
+		CMakeBuildConfiguration cmakeConfig = new CMakeBuildConfiguration(config, tc);
 		IPreferencesService preferencesService = Activator.getPreferencesService();
 		cmakeConfig.withPreset = preferencesService.getBoolean("org.eclipse.cdt.cmake.ui", "withPresets", true, null); //$NON-NLS-1$ //$NON-NLS-2$
 		cmakeConfig.setPreset(preferencesService.getString("org.eclipse.cdt.cmake.ui", "selectedPreset", "", null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -80,10 +80,7 @@ public class CMakeBuildConfigurationProvider implements ICBuildConfigurationProv
 
 		CMakeToolChainProvider provider = new CMakeToolChainProvider();
 		EmptyToolChain tc = new EmptyToolChain(provider);
-		CMakeBuildConfiguration2 cmakeConfig = new CMakeBuildConfiguration2(config, tc);
-		IPreferencesService preferencesService = Activator.getPreferencesService();
-
-		String examplePreference = preferencesService.getString("org.eclipse.cdt.cmake.ui", "cmakePath", "", null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		CMakeBuildConfiguration cmakeConfig = new CMakeBuildConfiguration(config, tc);
 
 		IProjectDescription projectDescription = project.getDescription();
 		projectDescription.setActiveBuildConfig("org.eclipse.cdt.cmake.core.provider/cmake."); //$NON-NLS-1$

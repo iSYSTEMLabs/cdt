@@ -49,7 +49,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 
 @SuppressWarnings("restriction")
-public class CMakeBuildConfiguration2 implements ICBuildConfiguration, IMarkerGenerator {
+public class CMakeBuildConfiguration implements ICBuildConfiguration, IMarkerGenerator {
 
 	static final IEnvironmentVariable[] STRINGS = {};
 	List<String> stringList = new ArrayList<>();
@@ -65,7 +65,7 @@ public class CMakeBuildConfiguration2 implements ICBuildConfiguration, IMarkerGe
 	public boolean fileChange;
 	private String buildPreset;
 
-	public CMakeBuildConfiguration2(IBuildConfiguration config, IToolChain tc) {
+	public CMakeBuildConfiguration(IBuildConfiguration config, IToolChain tc) {
 
 		this.tc = tc;
 		this.config = config;
@@ -141,25 +141,15 @@ public class CMakeBuildConfiguration2 implements ICBuildConfiguration, IMarkerGe
 	public IProject[] build(int kind, Map<String, String> args, IConsole console, IProgressMonitor monitor)
 			throws CoreException {
 
+		LoadingRequiredVariables();
+
 		monitor.slice(2);
-
-		IPreferencesService preferencesService = Activator.getPreferencesService();
-
-		if (cmakeCommand == null) {
-
-			this.withPreset = preferencesService.getBoolean("org.eclipse.cdt.cmake.ui", "withPresets", true, null); //$NON-NLS-1$ //$NON-NLS-2$
-			setPreset(preferencesService.getString("org.eclipse.cdt.cmake.ui", "selectedPreset", "", null), //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-					preferencesService.getString("org.eclipse.cdt.cmake.ui", "selectedPresetBld", "", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			this.ninja = preferencesService.getString("org.eclipse.cdt.cmake.ui", "ninjaPath", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-			this.cmake = preferencesService.getString("org.eclipse.cdt.cmake.ui", "cmakePath", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-			this.cmakeCommand = preferencesService.getString("org.eclipse.cdt.cmake.ui", "cmakeCommand", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-
-		}
 
 		ConsoleOutputStream consoleStream = console.getOutputStream();
 		IEnvironmentVariable[] env = STRINGS;
 		org.eclipse.core.runtime.Path workingDir = new org.eclipse.core.runtime.Path(getProjectDirectory().toString());
 		IContainer srcFolder = getProject();
+
 		try {
 
 			if (Activator.fileChange == true) {
@@ -251,6 +241,23 @@ public class CMakeBuildConfiguration2 implements ICBuildConfiguration, IMarkerGe
 		monitor.done();
 
 		return null;
+	}
+
+	private void LoadingRequiredVariables() {
+
+		IPreferencesService preferencesService = Activator.getPreferencesService();
+
+		if (cmakeCommand == null) {
+
+			this.withPreset = preferencesService.getBoolean("org.eclipse.cdt.cmake.ui", "withPresets", true, null); //$NON-NLS-1$ //$NON-NLS-2$
+			setPreset(preferencesService.getString("org.eclipse.cdt.cmake.ui", "selectedPreset", "", null), //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+					preferencesService.getString("org.eclipse.cdt.cmake.ui", "selectedPresetBld", "", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			this.ninja = preferencesService.getString("org.eclipse.cdt.cmake.ui", "ninjaPath", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
+			this.cmake = preferencesService.getString("org.eclipse.cdt.cmake.ui", "cmakePath", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
+			this.cmakeCommand = preferencesService.getString("org.eclipse.cdt.cmake.ui", "cmakeCommand", "", null); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
+
+		}
+
 	}
 
 	protected int watchProcess(IConsole console, IProgressMonitor monitor) throws CoreException {
