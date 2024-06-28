@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.cdt.cmake.core.internal;
 
-import org.eclipse.cdt.cmake.core.ICMakeToolChainManager;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -29,7 +28,6 @@ public class Activator extends Plugin {
 	public void start(BundleContext bundleContext) throws Exception {
 		super.start(bundleContext);
 		Activator.plugin = this;
-		bundleContext.registerService(ICMakeToolChainManager.class, new CMakeToolChainManager(), null);
 		new CMakeChangeDetector();
 		Activator.fileChange = true;
 	}

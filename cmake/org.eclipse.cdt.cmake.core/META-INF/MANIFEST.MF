@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.cdt.cmake.core;singleton:=true
-Bundle-Version: 1.5.500.qualifier
+Bundle-Version: 2.0.0.qualifier
 Bundle-Activator: org.eclipse.cdt.cmake.core.internal.Activator
 Bundle-Vendor: %providerName
 Require-Bundle: org.eclipse.core.runtime,
@@ -17,8 +17,7 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.cdt.cmake.core,
- org.eclipse.cdt.cmake.core.internal;x-friends:="org.eclipse.cdt.cmake.ui",
- org.eclipse.cdt.cmake.core.properties
+ org.eclipse.cdt.cmake.core.internal;x-friends:="org.eclipse.cdt.cmake.ui"
 Automatic-Module-Name: org.eclipse.cdt.cmake.core
 Bundle-Localization: plugin
 Import-Package: freemarker.template;version="[2.3.22,3.0.0)",

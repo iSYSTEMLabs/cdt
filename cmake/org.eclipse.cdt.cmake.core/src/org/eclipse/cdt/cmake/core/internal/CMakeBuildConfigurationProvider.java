@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.cdt.cmake.core.internal;
 
-import org.eclipse.cdt.cmake.core.ICMakeToolChainManager;
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
 import org.eclipse.cdt.core.build.ICBuildConfigurationManager;
 import org.eclipse.cdt.core.build.ICBuildConfigurationProvider;
@@ -28,7 +27,6 @@ public class CMakeBuildConfigurationProvider implements ICBuildConfigurationProv
 
 	public static final String ID = "org.eclipse.cdt.cmake.core.provider"; //$NON-NLS-1$
 
-	private ICMakeToolChainManager manager = Activator.getService(ICMakeToolChainManager.class);
 	private ICBuildConfigurationManager configManager = Activator.getService(ICBuildConfigurationManager.class);
 
 	@Override
