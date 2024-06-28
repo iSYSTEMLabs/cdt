@@ -137,7 +137,7 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 			cmakeCommandText.setText(preferenceStore.getString("cmakeCommand")); //$NON-NLS-1$
 			presetsComboBld.setText(preferenceStore.getString("selectedPresetBld")); //$NON-NLS-1$
 			ninjaCommandText.setText(preferenceStore.getString("ninjaCommand")); //$NON-NLS-1$
-			withPresetsCheckbox.setSelection(preferenceStore.getBoolean("withPresets")); //$NON-NLS-1$
+			withPresetsCheckbox.setSelection(Boolean.parseBoolean(preferenceStore.getString("withPresets"))); //$NON-NLS-1$
 
 			handleWithPresetsSelection();
 		}
@@ -200,13 +200,13 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 		}
 
 		Label cmakeCommandLabel = new Label(group, SWT.NONE);
-		cmakeCommandLabel.setText("CMake Command:"); //$NON-NLS-1$
+		cmakeCommandLabel.setText("Config Command:"); //$NON-NLS-1$
 
 		cmakeCommandText = new Text(group, SWT.BORDER);
 		cmakeCommandText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		Label ninjaCommandLabel = new Label(group, SWT.NONE);
-		ninjaCommandLabel.setText("Ninja Command:"); //$NON-NLS-1$
+		ninjaCommandLabel.setText("Build Command:"); //$NON-NLS-1$
 
 		ninjaCommandText = new Text(group, SWT.BORDER);
 		ninjaCommandText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -257,7 +257,8 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 			IBuildConfiguration Config = project.getBuildConfig("org.eclipse.cdt.cmake.core.provider/cmake."); //$NON-NLS-1$
 			ICBuildConfiguration cmakeConfig = configManager.getBuildConfiguration(Config);
 			IPreferenceStore preferenceStore = Activator.getPlugin().getPreferenceStore();
-			((CMakeBuildConfiguration) cmakeConfig).withPreset = preferenceStore.getBoolean("withPresets"); //$NON-NLS-1$
+			((CMakeBuildConfiguration) cmakeConfig).withPreset = Boolean
+					.parseBoolean(preferenceStore.getString("withPresets")); //$NON-NLS-1$
 			((CMakeBuildConfiguration) cmakeConfig).setPreset(preferenceStore.getString("selectedPreset"), //$NON-NLS-1$
 					preferenceStore.getString("selectedPresetBld")); //$NON-NLS-1$
 
@@ -302,9 +303,7 @@ public class CMakePropertyPage extends PropertyPage implements IWorkbenchPrefere
 			preferenceStore.setValue("selectedPresetBld", selectedPresetBld); //$NON-NLS-1$
 			preferenceStore.setValue("cmakeCommand", cmakeCommand); //$NON-NLS-1$
 			preferenceStore.setValue("ninjaCommand", ninjaCommand); //$NON-NLS-1$
-			preferenceStore.setValue("withPresets", withPresets); //$NON-NLS-1$
-
-			System.out.println(preferenceStore.getString("cmakePath")); //$NON-NLS-1$
+			preferenceStore.setValue("withPresets", String.valueOf(withPresets)); //$NON-NLS-1$
 
 			try {
 				preferenceStore.save();

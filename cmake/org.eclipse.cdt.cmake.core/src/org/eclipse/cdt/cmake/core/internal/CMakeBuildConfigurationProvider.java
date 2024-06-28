@@ -46,7 +46,8 @@ public class CMakeBuildConfigurationProvider implements ICBuildConfigurationProv
 
 		CMakeBuildConfiguration cmakeConfig = new CMakeBuildConfiguration(config, tc);
 		IPreferencesService preferencesService = Activator.getPreferencesService();
-		cmakeConfig.withPreset = preferencesService.getBoolean("org.eclipse.cdt.cmake.ui", "withPresets", true, null); //$NON-NLS-1$ //$NON-NLS-2$
+		cmakeConfig.withPreset = Boolean
+				.parseBoolean(preferencesService.getString("org.eclipse.cdt.cmake.ui", "withPresets", "true", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		cmakeConfig.setPreset(preferencesService.getString("org.eclipse.cdt.cmake.ui", "selectedPreset", "", null), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				preferencesService.getString("org.eclipse.cdt.cmake.ui", "selectedPresetBld", "", null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		cmakeConfig.ninja = preferencesService.getString("org.eclipse.cdt.cmake.ui", "ninjaPath", "", null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
