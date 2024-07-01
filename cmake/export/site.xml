@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.eclipse.cdt.cmake_11.7.0.202407011118.jar" id="org.eclipse.cdt.cmake" version="11.7.0.202407011118"/>
+</site>
