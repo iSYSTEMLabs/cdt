@@ -1,4 +1,5 @@
 # Eclipse CDT™ C/C++ Development Tools CMake fork
+# with TASKING support for CMake builder
 
 
 <img align="right" src="images/logo.png">
